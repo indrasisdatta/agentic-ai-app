@@ -3,4 +3,8 @@ langchain-core
 langgraph 
 langchain-community
 ipykernel
-dotenv
+python-dotenv
+langchain-groq
+arxiv 
+wikipedia
+langgraph-cli[inmem]
