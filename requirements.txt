@@ -9,3 +9,4 @@ arxiv
 wikipedia
 langgraph-cli[inmem]
 streamlit
+langgraph-checkpoint-postgres
