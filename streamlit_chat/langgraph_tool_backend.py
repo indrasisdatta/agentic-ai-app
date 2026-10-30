@@ -100,18 +100,17 @@ tool_node = ToolNode(tools)
 
 graph = StateGraph(ChatState)
 graph.add_node("chat_node", chat_node)
-graph.add_node("tools", tools)
+graph.add_node("tools", tool_node)
 
 graph.add_edge(START, "chat_node")
 graph.add_conditional_edges("chat_node", tools_condition)
 
-graph.add_edge("tools","chat_node")
+graph.add_edge("tools", "chat_node")
 
 chatbot = graph.compile(checkpointer=checkpointer)
 
-def get_threads():
+def retrieve_all_threads():
     all_threads = set()
     for checkpoint in checkpointer.list(None):
-       all_threads.add(checkpoint.config['configurable']['thread_id'])
-
+        all_threads.add(checkpoint.config["configurable"]["thread_id"])
     return list(all_threads)

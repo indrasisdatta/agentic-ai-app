@@ -1,8 +1,8 @@
 import uuid
 
 import streamlit as st
-from langgraph_backend import chatbot, get_threads
-from langchain_core.messages import HumanMessage
+from langgraph_tool_backend import chatbot, retrieve_all_threads
+from langchain_core.messages import AIMessage, HumanMessage
 
 
 def reset_chat():
@@ -28,7 +28,7 @@ if 'thread_id' not in st.session_state:
     st.session_state['thread_id'] = str(uuid.uuid4())
 
 if 'chat_threads' not in st.session_state:
-    st.session_state['chat_threads'] = get_threads()
+    st.session_state['chat_threads'] = retrieve_all_threads()
 
 # Sidebar UI
 st.sidebar.title("LangGraph Chat")
@@ -74,13 +74,24 @@ if user_input:
 
     with st.chat_message('assistant'):
 
-        ai_message = st.write_stream(
-            message_chunk.content for message_chunk, _ in chatbot.stream(
+        def ai_only_stream():
+            for message_chunk, _ in chatbot.stream(
                 { 'messages': [HumanMessage(content=user_input)] },
                 config=CONFIG,
                 stream_mode='messages'
-            )
-        )
+            ):
+                if isinstance(message_chunk, AIMessage):
+                    yield message_chunk.content
+
+        ai_message = st.write_stream(ai_only_stream())
+
+        # ai_message = st.write_stream(
+        #     message_chunk.content for message_chunk, _ in chatbot.stream(
+        #         { 'messages': [HumanMessage(content=user_input)] },
+        #         config=CONFIG,
+        #         stream_mode='messages'
+        #     )
+        # )
 
     st.session_state['message_history'].append({"role": "assistant", "content": ai_message})
 
